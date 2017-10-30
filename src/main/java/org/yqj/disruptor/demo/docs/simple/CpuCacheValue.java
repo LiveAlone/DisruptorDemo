@@ -1,4 +1,4 @@
-package org.yqj.disruptor.demo.docs;
+package org.yqj.disruptor.demo.docs.simple;
 
 /**
  * @author yaoqijun on 2017-10-30.

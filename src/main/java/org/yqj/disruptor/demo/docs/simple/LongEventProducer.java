@@ -1,4 +1,4 @@
-package org.yqj.disruptor.demo.docs;
+package org.yqj.disruptor.demo.docs.simple;
 
 import com.lmax.disruptor.RingBuffer;
 
