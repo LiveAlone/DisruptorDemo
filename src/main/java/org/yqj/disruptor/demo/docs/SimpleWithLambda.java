@@ -1,5 +1,6 @@
 package org.yqj.disruptor.demo.docs;
 
+import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 import org.yqj.disruptor.demo.docs.simple.LongEvent;
@@ -7,6 +8,7 @@ import org.yqj.disruptor.demo.docs.simple.LongEvent;
 import java.nio.ByteBuffer;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author yaoqijun on 2017-10-30.
@@ -20,9 +22,8 @@ public class SimpleWithLambda {
 
         Disruptor<LongEvent> disruptor = new Disruptor<LongEvent>(LongEvent::new, bufferSize, executor);
 
-        disruptor
-                .handleEventsWith((event, sequence, endOfBatch) -> System.out.println("Event is : " + event))
-                .then((event, sequence, endOfBatch) -> event.clear());
+        disruptor.handleEventsWith(builderHandler("handlerFirst"), builderHandler("handlerSecond"))
+                .then(builderClean());
 
         disruptor.start();
 
@@ -34,8 +35,34 @@ public class SimpleWithLambda {
         {
             bb.putLong(0, l);
             // 不同的配置方式, config
-            ringBuffer.publishEvent((event, sequence, buffer) -> event.setValue(buffer.getLong(0)), bb);
+            ringBuffer.publishEvent((event, sequence, buffer) -> event.setValue(buffer.getLong(100)), bb);
             Thread.sleep(1000);
+        }
+    }
+
+    private static EventHandler<LongEvent> builderClean(){
+        return (event, sequence, endOfBatch) -> {
+//            sleepWorkThreadInfo();
+            System.out.println(" clean event " + event.getValue());
+        };
+    }
+
+    private static EventHandler<LongEvent> builderHandler(String handlerName){
+        return (event, sequence, endOfBatch) -> {
+            sleepWorkThreadInfo();
+            System.out.println(handlerName + " finish event " + event.getValue());
+        };
+    }
+
+    private static void sleepWorkThreadInfo(){
+        Long randomSleepTime = ThreadLocalRandom.current().nextLong(5000);
+
+        System.out.println("current thread " + Thread.currentThread().getName() + " sleep time: " + randomSleepTime);
+
+        try {
+            Thread.sleep(randomSleepTime);
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 }
