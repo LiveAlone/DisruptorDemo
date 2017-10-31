@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class RunCommanLine implements CommandLineRunner{
 
+    @Override
     public void run(String... args) throws Exception {
         System.out.println("now command line run ");
         System.out.println("args content is " + Lists.newArrayList(args).toString());

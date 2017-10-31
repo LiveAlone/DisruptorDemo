@@ -30,12 +30,10 @@ public class SimpleWithLambda {
         // ring buffer data add
         RingBuffer<LongEvent> ringBuffer = disruptor.getRingBuffer();
 
-        ByteBuffer bb = ByteBuffer.allocate(8);
         for (long l = 0; true; l++)
         {
-            bb.putLong(0, l);
-            // 不同的配置方式, config
-            ringBuffer.publishEvent((event, sequence, buffer) -> event.setValue(buffer.getLong(100)), bb);
+            final Long value = l;
+            ringBuffer.publishEvent((event, sequence, buffer) -> event.setValue(value));
             Thread.sleep(1000);
         }
     }
@@ -57,7 +55,7 @@ public class SimpleWithLambda {
     private static void sleepWorkThreadInfo(){
         Long randomSleepTime = ThreadLocalRandom.current().nextLong(5000);
 
-        System.out.println("current thread " + Thread.currentThread().getName() + " sleep time: " + randomSleepTime);
+//        System.out.println("current thread " + Thread.currentThread().getName() + " sleep time: " + randomSleepTime);
 
         try {
             Thread.sleep(randomSleepTime);
